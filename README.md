@@ -242,7 +242,7 @@ credentials, and rotating a secret doesn't require a `terraform apply`.
 
 
 
-## Clean run-through, More Detailed.
+## More Detailed Setup Run-through.
 
 Assumes Docker Desktop, kubectl, kind, terraform, and Python are already
 installed (they are, on your machine). This is the sequence to run live.
