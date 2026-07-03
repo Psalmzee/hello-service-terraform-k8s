@@ -1,0 +1,6 @@
+# Copy to terraform.tfvars and adjust for your environment.
+# terraform.tfvars is git-ignored so real values never get committed.
+
+kubeconfig_path  = "~/.kube/config"
+image_repository = "hello-service"
+image_tag        = "0.1.0"

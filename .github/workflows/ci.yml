@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  python-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install -r app/requirements-dev.txt
+      - run: pytest -v
+
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: python-tests
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image (no push - CI validates the build only)
+        run: docker build -t hello-service:ci .
+
+  terraform-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.5"
+
+      - name: terraform fmt
+        run: terraform fmt -check -recursive
+
+      - name: terraform init (module)
+        run: terraform -chdir=modules/platform-app init -backend=false
+
+      - name: terraform validate (module)
+        run: terraform -chdir=modules/platform-app validate
+
+      - name: terraform init (example)
+        run: terraform -chdir=examples/basic init -backend=false
+
+      - name: terraform validate (example)
+        run: terraform -chdir=examples/basic validate
+
+      - uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: "v0.53.0"
+
+      - name: tflint (module)
+        run: tflint --chdir=modules/platform-app --init && tflint --chdir=modules/platform-app
+
+      - name: tflint (example)
+        run: tflint --chdir=examples/basic --init && tflint --chdir=examples/basic

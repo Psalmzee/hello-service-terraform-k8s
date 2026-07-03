@@ -1,0 +1,13 @@
+**/__pycache__/
+**/*.pyc
+.git
+.gitignore
+.github
+modules/
+examples/
+*.tfstate*
+.terraform/
+app/tests/
+app/requirements-dev.txt
+README.md
+pytest.ini
