@@ -242,7 +242,7 @@ credentials, and rotating a secret doesn't require a `terraform apply`.
 
 
 
-  ## Clean run-through, More Detailed.
+## Clean run-through, More Detailed.
 
 Assumes Docker Desktop, kubectl, kind, terraform, and Python are already
 installed (they are, on your machine). This is the sequence to run live.
@@ -278,7 +278,7 @@ docker run --rm -p 8000:8000 hello-service:0.1.0
 ```
 New terminal: `curl localhost:8000/health`, then `Ctrl+C` the container.
 
-### 4. Create a kind cluster (skip if one's already running)
+### 4. Create a kind cluster
 
 ```bash
 kind create cluster --name hello-service-test
@@ -322,7 +322,7 @@ curl localhost:8080/ready
 terraform output
 ```
 
-### 8. CI checks (optional, if asked "how do you know this is production-quality")
+### 8. CI checks
 
 ```bash
 cd ~/projects/hello-service
