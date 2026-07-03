@@ -1,4 +1,4 @@
-# hello-service
+# Hello-Service
 
 ![CI](https://github.com/Psalmzee/hello-service-terraform-k8s/actions/workflows/ci.yml/badge.svg)
 
