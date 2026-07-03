@@ -1,5 +1,7 @@
 # hello-service
 
+![CI](https://github.com/Psalmzee/hello-service-terraform-k8s/actions/workflows/ci.yml/badge.svg)
+
 A minimal Python API (FastAPI) with a reusable Terraform module to deploy it to Kubernetes.
 
 ```
