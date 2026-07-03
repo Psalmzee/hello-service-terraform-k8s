@@ -240,22 +240,19 @@ credentials, and rotating a secret doesn't require a `terraform apply`.
 - **Contract/integration tests** hitting a real deployed instance in CI
   (currently only unit tests against the FastAPI app in-process).
 
+
+
   ## Clean run-through, More Detailed.
 
 Assumes Docker Desktop, kubectl, kind, terraform, and Python are already
 installed (they are, on your machine). This is the sequence to run live.
 
-### 1. Clone fresh (optional — skip if using your existing local copy)
+### 1. Clone Repository
 
 ```bash
 cd ~/projects
 git clone https://github.com/Psalmzee/hello-service-terraform-k8s.git hello-service-demo
 cd hello-service-demo
-```
-
-Or just `cd` into your existing working copy:
-```bash
-cd ~/projects/hello-service
 ```
 
 ### 2. Run the tests
