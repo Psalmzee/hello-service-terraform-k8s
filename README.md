@@ -239,3 +239,113 @@ credentials, and rotating a secret doesn't require a `terraform apply`.
   rolling update.
 - **Contract/integration tests** hitting a real deployed instance in CI
   (currently only unit tests against the FastAPI app in-process).
+
+  ## Clean run-through, More Detailed.
+
+Assumes Docker Desktop, kubectl, kind, terraform, and Python are already
+installed (they are, on your machine). This is the sequence to run live.
+
+### 1. Clone fresh (optional — skip if using your existing local copy)
+
+```bash
+cd ~/projects
+git clone https://github.com/Psalmzee/hello-service-terraform-k8s.git hello-service-demo
+cd hello-service-demo
+```
+
+Or just `cd` into your existing working copy:
+```bash
+cd ~/projects/hello-service
+```
+
+### 2. Run the tests
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r app/requirements-dev.txt
+pytest -v
+```
+
+Expect: `4 passed`.
+
+### 3. Build the Docker image
+
+```bash
+docker build -t hello-service:0.1.0 .
+```
+
+Optional — prove it runs standalone before involving Kubernetes:
+```bash
+docker run --rm -p 8000:8000 hello-service:0.1.0
+```
+New terminal: `curl localhost:8000/health`, then `Ctrl+C` the container.
+
+### 4. Create a kind cluster (skip if one's already running)
+
+```bash
+kind create cluster --name hello-service-test
+kubectl cluster-info --context kind-hello-service-test
+```
+
+### 5. Load the image into the cluster
+
+```bash
+kind load docker-image hello-service:0.1.0 --name hello-service-test
+```
+
+### 6. Deploy with Terraform
+
+```bash
+cd examples/basic
+cp terraform.tfvars.example terraform.tfvars
+terraform init
+terraform apply
+```
+
+Type `yes`. Should complete in 15-20 seconds.
+
+### 7. Verify
+
+```bash
+kubectl -n hello-demo get pods
+kubectl -n hello-demo port-forward svc/hello-service 8080:80
+```
+
+New terminal:
+```bash
+curl localhost:8080/
+curl localhost:8080/health
+curl localhost:8080/ready
+```
+
+`Ctrl+C` the port-forward when done.
+
+```bash
+terraform output
+```
+
+### 8. CI checks (optional, if asked "how do you know this is production-quality")
+
+```bash
+cd ~/projects/hello-service
+terraform fmt -check -recursive
+terraform -chdir=modules/platform-app init -backend=false
+terraform -chdir=modules/platform-app validate
+terraform -chdir=examples/basic init -backend=false
+terraform -chdir=examples/basic validate
+```
+
+### 9. Tear down
+
+```bash
+cd examples/basic
+terraform destroy
+```
+Type `yes`.
+
+```bash
+kind delete cluster --name hello-service-test
+```
+
+---
